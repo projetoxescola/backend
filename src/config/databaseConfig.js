@@ -2,12 +2,13 @@ module.exports = {
 
     dialect: 'mysql',
     host: 'localhost',
-    username: 'username',
-    password: 'PassWord',
-    database: 'database',
+    username: '',
+    password: '',
+    database: '',
     define: {
-        timestamps: false,
+        timestamps: true,
         underscored: false,
+        freezeTableName: true,
     },
 
 }
