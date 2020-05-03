@@ -1,4 +1,6 @@
 const Prova = require('../models/Prova');
+const AlunoTurma = require('../models/AlunoTurma');
+const TurmaProfessorMateriaEscola = require('../models/TurmaProfessorMateriaEscola');
 
 const alunoTurmaAssociate = (params) => {
 
@@ -27,28 +29,61 @@ const ProfessorMateriaEscolaAssociate = (params) => {
 module.exports = {
 
     async cadastrar(req, res) {
-        const prova = req.body;
+        const { alunoTurmaId, turmaProfessorMateriaEscolaId, peso } = req.body;
+        
+        const alunoTurma = await AlunoTurma.findByPk(alunoTurmaId);
+        const turmaProfessorMateriaEscola = 
+            await TurmaProfessorMateriaEscola.findByPk(turmaProfessorMateriaEscolaId);
 
-        const cadastro = await Prova.create(prova);
+        if(!alunoTurma)
+            return res.status(400).json({ 'erro':'AlunoTurma não encontrado' });
 
-        return res.status(200).json(cadastro);
+        if(!turmaProfessorMateriaEscola)
+            return res.status(400).json({ 'erro':'turmaProfessorMateriaEscola não encontrado' });
+
+        const prova = await Prova.create({
+            peso
+        });
+
+        await prova.setProvaAlunoTurma(alunoTurma);
+        await prova.setProvaTurmaProfessorMateriaEscola(turmaProfessorMateriaEscola);
+
+        return res.status(200).json(prova);
 
     },
 
     async atualizar(req, res) {
         const { id } = req.params;
-        let prova = req.body;
+        let { peso, alunoTurmaId, turmaProfessorMateriaEscolaId } = req.body;
 
-        const provaAtualizado = await Prova.update(prova, {
+        const alunoTurma = await AlunoTurma.findByPk(alunoTurmaId);
+        const turmaProfessorMateriaEscola = 
+            await TurmaProfessorMateriaEscola.findByPk(turmaProfessorMateriaEscolaId);
+        
+        if(!alunoTurma)
+            return res.status(400).json({ 'erro':'AlunoTurma não encontrado' });
+
+        if(!turmaProfessorMateriaEscola)
+            return res.status(400).json({ 'erro':'turmaProfessorMateriaEscola não encontrado' });
+
+        const provaAtualizado = await Prova.update({
+            peso
+        }, {
             where: {
                 id,
             }
         });
 
-        if(!provaAtualizado[0])
+        let prova = await Prova.findByPk(id)
+
+        if(!prova)
             return res.status(400).json({ 'erro':'Prova não encontrada' });
 
-        prova = {id, ...prova};
+        if(!provaAtualizado[0])
+            return res.status(400).json({ 'erro':'Prova Nao Atulizada' });
+
+        await prova.setProvaAlunoTurma(alunoTurma);
+        await prova.setProvaTurmaProfessorMateriaEscola(turmaProfessorMateriaEscola);
 
         return res.status(200).json(prova);
 
@@ -70,7 +105,7 @@ module.exports = {
         const { id_aluno } = req.params;
 
         const params = {
-            idAluno: id_aluno
+            alunoId: id_aluno
         };
 
         const provas = await Prova.findAll({
@@ -90,7 +125,7 @@ module.exports = {
         const { id_turma } = req.params;
 
         const params = {
-            idTurma: id_turma,
+            turmaId: id_turma,
         }
 
         const provas = await Prova.findAll({
@@ -111,7 +146,7 @@ module.exports = {
 
         const params = {
             where: {
-                idProfessor: id_professor
+                professorId: id_professor
             }
         }
 
@@ -135,7 +170,7 @@ module.exports = {
             include: {
                 association: 'materiaProfessor',
                 where: {
-                    idMateria: id_materia
+                    materiaId: id_materia
                 },
             }
         }

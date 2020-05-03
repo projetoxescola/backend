@@ -5,19 +5,17 @@ class Prova extends Model {
     static init(sequelize) {
         super.init({
             id: {
-                type: DataTypes.BIGINT,
+                type: DataTypes.UUID,
+                defaultValue: DataTypes.UUIDV4,
                 primaryKey: true,
                 autoIncrement: true,
-                allowNull: false,
-            },
-            idTurmaProfessorMateriaEscola: {
-                type: DataTypes.BIGINT,
                 allowNull: false,
             },
             peso: {
                 type: DataTypes.DOUBLE,
                 allowNull: false
-            }
+            },
+            
         },
         {
             sequelize,
@@ -28,11 +26,11 @@ class Prova extends Model {
 
     static association(models) {
         this.belongsTo(models.AlunoTurma, {
-            foreignKey: 'idAlunoTurma',
+            foreignKey: 'alunoTurmaId',
             as: 'ProvaAlunoTurma',
         });
         this.belongsTo(models.TurmaProfessorMateriaEscola, {
-            foreignKey: 'idTurmaProfessorMateriaEscola',
+            foreignKey: 'turmaProfessorMateriaEscolaId',
             as: 'provaTurmaProfessorMateriaEscola'
         });
     }

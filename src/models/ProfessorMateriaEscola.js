@@ -6,7 +6,8 @@ class ProfessorMateriaEscola extends Model {
 
         super.init({
             id: {
-                type: DataTypes.BIGINT,
+                type: DataTypes.UUID,
+                defaultValue: DataTypes.UUIDV4,
                 primaryKey: true,
                 autoIncrement: true,
                 allowNull: false,
@@ -21,16 +22,16 @@ class ProfessorMateriaEscola extends Model {
 
     static association(models) {
         this.belongsToMany(models.Turma, {
-            foreignKey: 'idProfessorMateriaEscola',
+            foreignKey: 'professorMateriaEscolaId',
             through: models.TurmaProfessorMateriaEscola,
             as: 'turmaProfessorMateriaEscola'
         });
         this.hasMany(models.TurmaProfessorMateriaEscola, {
-            foreignKey: 'idProfessorMateriaEscola',
+            foreignKey: 'professorMateriaEscolaId',
             as: 'turmaProfessorMateria'
         });
         this.belongsTo(models.MateriaEscola, {
-            foreignKey: 'idMateriaEscola',
+            foreignKey: 'materiaEscolaId',
             as: 'materiaProfessor'
         });
     }

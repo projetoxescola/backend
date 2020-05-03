@@ -5,7 +5,8 @@ class MateriaEscola extends Model {
     static init(sequelize) {
         super.init({
             id: {
-                type: DataTypes.BIGINT,
+                type: DataTypes.UUID,
+                defaultValue: DataTypes.UUIDV4,
                 primaryKey: true,
                 autoIncrement: true,
                 allowNull: false,
@@ -19,7 +20,7 @@ class MateriaEscola extends Model {
 
     static association(models) {
         this.hasMany(models.ProfessorMateriaEscola, {
-            foreignKey: 'idMateriaEscola',
+            foreignKey: 'materiaEscolaId',
             as: 'materiaProfessor'
         });
     }
